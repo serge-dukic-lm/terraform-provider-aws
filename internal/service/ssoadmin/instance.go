@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MPL-2.0
 
 package ssoadmin
+
 // **PLEASE DELETE THIS AND ALL TIP COMMENTS BEFORE SUBMITTING A PR FOR REVIEW!**
 //
 // TIP: ==== INTRODUCTION ====
@@ -55,9 +56,11 @@ import (
 	"github.com/hashicorp/terraform-provider-aws/internal/errs"
 	"github.com/hashicorp/terraform-provider-aws/internal/framework"
 	"github.com/hashicorp/terraform-provider-aws/internal/framework/flex"
+	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
 	"github.com/hashicorp/terraform-provider-aws/internal/tfresource"
 	"github.com/hashicorp/terraform-provider-aws/names"
 )
+
 // TIP: ==== FILE STRUCTURE ====
 // All resources should follow this basic outline. Improve this resource's
 // maintainability by sticking to it.
@@ -142,11 +145,9 @@ func (r *resourceInstance) Metadata(_ context.Context, req resource.MetadataRequ
 func (r *resourceInstance) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		Attributes: map[string]schema.Attribute{
-			"arn": framework.ARNAttributeComputedOnly(),
-			"description": schema.StringAttribute{
+			"client_token": schema.StringAttribute{
 				Optional: true,
 			},
-			"id": framework.IDAttribute(),
 			"name": schema.StringAttribute{
 				Required: true,
 				// TIP: ==== PLAN MODIFIERS ====
@@ -162,9 +163,8 @@ func (r *resourceInstance) Schema(ctx context.Context, req resource.SchemaReques
 					stringplanmodifier.RequiresReplace(),
 				},
 			},
-			"type": schema.StringAttribute{
-				Required: true,
-			},
+			names.AttrTags: tftags.TagsAttribute(),
+			names.AttrTagsAll: tftags.TagsAttributeComputedOnly(),
 		},
 		Blocks: map[string]schema.Block{
 			"complex_argument": schema.ListNestedBlock{
